@@ -1,35 +1,91 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
+
+import { useEffect, useState } from 'react'
 import './App.css'
+import '@radix-ui/themes/styles.css';
+import { Theme } from '@radix-ui/themes';
+// import { Box, Grid } from '@radix-ui/themes';
 
-function App() {
-  const [count, setCount] = useState(0)
+import MovieCard from './MovieCard'
 
-  return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+// 
+const API_URL = `http://www.omdbapi.com/?apikey=${import.meta.env.VITE_OMDB_KEY}`;
+
+
+
+
+export default function App() {
+    const [movies, setMovies] = useState([])
+    const [searchTerm, setSearchTerm] = useState('')
+
+
+    const searchMovies = async (title: string) => {
+        const response = await fetch(`${API_URL}&s=${title}`)
+        const data = await response.json()
+
+        setMovies(data.Search)
+
+
+    }
+
+    useEffect(() => {
+
+        // searchMovies('batman')
+    })
+
+    return (
+        <Theme
+            appearance='dark'
+            className='grid place-items-center h-screen  '
+        >
+
+            <div>
+                <h1 className='text-4xl text-center text-blue-500' >
+                    Movie Search
+                </h1>
+                <div className='flex justify-center' >
+                    <input type="text" placeholder="Search for a movie" className='p-4'
+                        value={searchTerm}
+                        onChange={(e) => {
+                            setSearchTerm(e.target.value)
+                        }}
+                    />
+                    <button
+                        onClick={() => {
+
+                            searchMovies(searchTerm)
+                        }}
+                        className='p-4 bg-blue-500 text-white'
+                    >Search</button>
+                </div>
+            </div>
+
+            {/* <Grid columns="3" gap="3" width="auto">
+                <Box height="9">
+                    <DecorativeBox />
+                </Box>
+                <Box height="9">
+                    <DecorativeBox />
+                </Box>
+                <Box height="9">
+                    <DecorativeBox />
+                </Box>
+                <Box height="9">
+                    <DecorativeBox />
+                </Box>
+                <Box height="9">
+                    <DecorativeBox />
+                </Box>
+                <Box height="9">
+                    <DecorativeBox />
+                </Box>
+            </Grid> */}
+
+
+
+            <div id='movies' className='grid grid-cols-4 gap-4'>
+                {movies.map((movie, i) => <MovieCard key={i} movie={movie} />)}
+            </div>
+        </Theme >
+    )
 }
 
-export default App
